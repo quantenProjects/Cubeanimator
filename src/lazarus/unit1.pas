@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, types,LCLType, Spin;
+  StdCtrls, types,LCLType, Spin, Clipbrd;
 
 type
 
@@ -20,7 +20,10 @@ type
     Button5: TButton;
     Button6: TButton;
     Button7: TButton;
+    Button8: TButton;
+    Button9: TButton;
     Label1: TLabel;
+    Memo1: TMemo;
     OpenDialog1: TOpenDialog;
     PaintBox1: TPaintBox;
     RadioGroup1: TRadioGroup;
@@ -35,11 +38,15 @@ type
     procedure Button5Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
     procedure Button7Click(Sender: TObject);
+    procedure Button8Click(Sender: TObject);
+    procedure Button9Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Click(Sender: TObject);
     procedure PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     PROCEDURE malen;
+    procedure PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
     procedure RadioGroup1Click(Sender: TObject);
     PROCEDURE read_frame;
     procedure SpinEdit1Change(Sender: TObject);
@@ -47,6 +54,7 @@ type
     procedure ToggleBox1Change(Sender: TObject);
     PROCEDURE write_frame;
     PROCEDURE clear_frame;
+    FUNCTION export_array:string;
   private
     { private declarations }
   public
@@ -58,6 +66,8 @@ var
   frame:array[0..8,0..8,0..8] of boolean;
   frames:TStringList;
   akkframe:integer;
+  lastx8,lasty8,lastz8:integer;
+  leddownstate:boolean;
 implementation
 
 {$R *.lfm}
@@ -153,6 +163,18 @@ begin
 
 end;
 
+procedure TForm1.Button8Click(Sender: TObject);
+begin
+  memo1.Text:='byte frames[' + IntToStr(frames.Count) + '][8][8] = '  +export_array;
+  //ShowMessage(export_array);
+end;
+
+procedure TForm1.Button9Click(Sender: TObject);
+begin
+  Button8Click(Sender);
+  Clipboard.AsText:=memo1.Text;
+end;
+
 procedure TForm1.PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var x8,y8,z8:integer;
@@ -163,9 +185,15 @@ begin
    z8 := trunc(x/122);
    case RadioGroup1.ItemIndex of
    //0: frame[,,] := not frame[trunc((x-trunc(x/122)*122)/15),y8,trunc(x/122)];
-   0: frame[x8,y8,z8] := not frame[x8,y8,z8];
-   1: frame[x8,z8,y8] := not frame[x8,z8,y8];
-   2: frame[z8,y8,x8] := not frame[z8,y8,x8];
+   0: begin frame[x8,y8,z8] := not frame[x8,y8,z8];
+      leddownstate:=frame[x8,y8,z8];
+   end;
+   1: begin frame[x8,z8,y8] := not frame[x8,z8,y8];
+   leddownstate:=frame[x8,z8,y8];
+   end;
+   2: begin frame[z8,y8,x8] := not frame[z8,y8,x8];
+   leddownstate:=frame[z8,y8,x8];
+   end;
    end;
    //ShowMessage(IntToStr(x8)+', '+IntToStr(y8));
    malen;
@@ -218,6 +246,35 @@ begin
            end;
         end;
      end;
+end;
+
+procedure TForm1.PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+var x8,y8,z8:integer;
+begin
+   if not (ssRight in Shift) then begin
+   exit;
+   end else begin
+
+   end;
+  x8 := trunc((x-trunc(x/122)*122)/15) ;
+   y8 := trunc(y/15) ;
+   z8 := trunc(x/122);
+   if (x8 = lastx8) and (y8 = lasty8) and (z8 = lastz8) then
+   Exit;
+   lastx8:=x8;
+   lasty8 := y8;
+   lastz8 := z8;
+   case RadioGroup1.ItemIndex of
+   //0: frame[,,] := not frame[trunc((x-trunc(x/122)*122)/15),y8,trunc(x/122)];
+   0: frame[x8,y8,z8] := leddownstate;
+   1: frame[x8,z8,y8] := leddownstate;
+   2: frame[z8,y8,x8] := leddownstate;
+   end;
+   //ShowMessage(IntToStr(x8)+', '+IntToStr(y8));
+   malen;
+   write_frame;
+
 end;
 
 procedure TForm1.RadioGroup1Click(Sender: TObject);
@@ -312,6 +369,49 @@ begin
           end;
          end;
       end;
+end;
+
+FUNCTION TForm1.export_array:string;
+var i,j,k,f:integer;
+  exportstr:string;
+begin
+  exportstr := '{';
+  for f := 1 to frames.Count do
+  begin
+       akkframe:=f;
+       read_frame;
+       exportstr:=exportstr + '{';
+       for k := 0 to 7 do
+       begin
+         exportstr:=exportstr + '{';
+         for j := 0 to 7 do
+         begin
+           exportstr:=exportstr + 'B';
+           for i := 0 to 7 do
+           begin
+              if frame[i,j,k] then
+              begin
+                   exportstr:=exportstr + '1';
+              end else
+              begin
+                   exportstr:=exportstr + '0';
+              end;
+           end;
+           if j <> 7 then
+           exportstr:=exportstr + ',';
+         end;
+         exportstr:=exportstr + '}';
+         if k <> 7 then
+         exportstr:=exportstr + ',';
+         exportstr:=exportstr + chr(10);
+       end;
+       exportstr:=exportstr + '}';
+       if f <> frames.Count then
+       exportstr:=exportstr + ',';
+       exportstr:=exportstr + chr(10);
+  end;
+  exportstr:=exportstr + '};';
+  export_array:=exportstr;
 end;
 
 end.

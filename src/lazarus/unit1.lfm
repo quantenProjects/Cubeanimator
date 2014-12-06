@@ -17,6 +17,7 @@ object Form1: TForm1
     ParentColor = False
     OnClick = PaintBox1Click
     OnMouseDown = PaintBox1MouseDown
+    OnMouseMove = PaintBox1MouseMove
   end
   object RadioGroup1: TRadioGroup
     Left = 24
@@ -140,6 +141,32 @@ object Form1: TForm1
     Caption = 'Frame löschen'
     OnClick = Button7Click
     TabOrder = 9
+  end
+  object Button8: TButton
+    Left = 491
+    Height = 41
+    Top = 208
+    Width = 96
+    Caption = 'Export als Code'
+    OnClick = Button8Click
+    TabOrder = 10
+  end
+  object Memo1: TMemo
+    Left = 608
+    Height = 137
+    Top = 160
+    Width = 368
+    ScrollBars = ssAutoBoth
+    TabOrder = 11
+  end
+  object Button9: TButton
+    Left = 472
+    Height = 46
+    Top = 251
+    Width = 115
+    Caption = 'Export und kopiere'
+    OnClick = Button9Click
+    TabOrder = 12
   end
   object OpenDialog1: TOpenDialog
     left = 352
