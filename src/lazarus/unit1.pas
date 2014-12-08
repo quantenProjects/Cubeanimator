@@ -14,6 +14,8 @@ type
 
   TForm1 = class(TForm)
     Button1: TButton;
+    Button10: TButton;
+    Button11: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -22,6 +24,7 @@ type
     Button7: TButton;
     Button8: TButton;
     Button9: TButton;
+    CheckBox1: TCheckBox;
     Label1: TLabel;
     Memo1: TMemo;
     OpenDialog1: TOpenDialog;
@@ -31,6 +34,8 @@ type
     SpinEdit1: TSpinEdit;
     Timer1: TTimer;
     ToggleBox1: TToggleBox;
+    procedure Button10Click(Sender: TObject);
+    procedure Button11Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -96,6 +101,23 @@ begin
     read_frame;
 end;
 
+procedure TForm1.Button11Click(Sender: TObject);
+begin
+  frames.Insert(akkframe,'');
+  akkframe:=akkframe+1;
+  write_frame;
+  read_frame;
+end;
+
+procedure TForm1.Button10Click(Sender: TObject);
+begin
+   frames.Insert(akkframe,'');
+  akkframe:=akkframe+1;
+  clear_frame;
+  write_frame;
+  read_frame;
+end;
+
 procedure TForm1.Button2Click(Sender: TObject);
 begin
   akkframe := akkframe - 1;
@@ -109,9 +131,15 @@ begin
    akkframe := akkframe + 1;
   if akkframe > frames.Count then
   begin
-    frames.Add('');
-    clear_frame;
-    write_frame;
+    if CheckBox1.Checked then
+    akkframe := 1
+    else begin
+      akkframe:=frames.Count;
+
+    end;
+    //frames.Add('');
+    //clear_frame;
+    //write_frame;
   end;
 
   read_frame;
@@ -165,7 +193,7 @@ end;
 
 procedure TForm1.Button8Click(Sender: TObject);
 begin
-  memo1.Text:='byte frames[' + IntToStr(frames.Count) + '][8][8] = '  +export_array;
+  memo1.Text:='byte frames[' + IntToStr(frames.Count) + '][8][8] = '  +export_array + chr(10) + 'const int framecount=' + IntToStr(frames.Count-1) +';';
   //ShowMessage(export_array);
 end;
 
@@ -320,8 +348,16 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
   akkframe := akkframe + 1;
-  if akkframe > frames.Count then
-    akkframe := 1;
+  if akkframe > frames.Count then begin
+    if CheckBox1.Checked then
+    akkframe := 1
+    else  begin
+
+    ToggleBox1.Checked:=false;
+    akkframe:=frames.Count;
+    end;
+
+  end;
   read_frame;
 end;
 
