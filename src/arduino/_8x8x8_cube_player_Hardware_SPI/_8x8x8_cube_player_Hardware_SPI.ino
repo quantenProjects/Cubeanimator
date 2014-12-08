@@ -1,3 +1,5 @@
+#include <SPI.h>
+
 /* cube 8x8x8
 
 */
@@ -5,19 +7,21 @@
 const byte layerpins[8] = {
   2,3,4,5,6,7,8,9};
 const byte latchpin = 10;
-// only needed if using soft shiftOut. 
-// pins for hardware spi view datasheet
-const byte datapin = 12;
-const byte clockpin = 13;
+/*
+The Hardware SPI pins are mostly diffrent on each µC. Look in the datasheet
+Connect:
+Serial in on MOSI
+Clock on SCK
 
-
-// true then using shiftOut (software, slow) - false then using hardware SPI (shift with clockfrequenc, 40x faster)
-// ---------------------- only Softspi function yet coming soon -----------------------------------
-const boolean softspiusage = true;
+*/
 
 //false then the layerdriver will set LOW when they have to be off - true then the layerdriver will set HIGH when they have to be off
 const boolean layerdriveroffstate = false;
 const int framedelay = 2000;
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------
+// put here the code from the desinger
+
 
 byte frames[3][8][8] = {{{B11111111,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000},
 {B11111111,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000},
@@ -49,7 +53,7 @@ byte frames[3][8][8] = {{{B11111111,B00000000,B00000000,B00000000,B00000000,B000
 };
 const int framecount=2;
 
-
+//----------------------------------------------------
 
 
 
@@ -59,7 +63,7 @@ byte lastlayer = 0;
 unsigned long start = 0;
 
 void setup() {
-  Serial.begin(115200);
+  
   if (softspiusage) {
     pinMode(datapin, OUTPUT);
     pinMode(clockpin, OUTPUT);
@@ -77,12 +81,21 @@ void loop() {
   
   for (int i =7;i>-1;i--) {
     
-    for (int j = 0;j<8;j++) {
-      //if (softspiusage) {
-        shiftOut(datapin,clockpin,MSBFIRST,frame[i][j]);
-        //Serial.println(i);
-      //}
-    }
+    //for (int j = 0;j<8;j++) {
+      
+        //SPI.transfer(frame[i][j]);
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        // Info I know that this is bad programming, but I think that is faster than an for loop
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      SPI.transfer(frame[i][0]);
+      SPI.transfer(frame[i][1]);
+      SPI.transfer(frame[i][2]);
+      SPI.transfer(frame[i][3]);
+      SPI.transfer(frame[i][4]);
+      SPI.transfer(frame[i][5]);
+      SPI.transfer(frame[i][6]);
+      SPI.transfer(frame[i][7]);
+    //}
     digitalWrite(layerpins[lastlayer],LOW);
     // digitalWrite(layerpins[lastlayer],layerdriveroffstate);
     digitalWrite(latchpin,HIGH);
