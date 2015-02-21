@@ -198,7 +198,7 @@ end;
 
 procedure TForm1.Button8Click(Sender: TObject);
 begin
-  memo1.Text := 'byte frames[' + IntToStr(frames.Count) + '][8][8] = ' + export_array +
+  memo1.Text := 'PROGMEM prog_uchar frames[' + IntToStr(frames.Count) + '][8][8] = ' + export_array +
     chr(10) + 'const int framecount=' + IntToStr(frames.Count - 1) + ';';
   //ShowMessage(export_array);
 end;
