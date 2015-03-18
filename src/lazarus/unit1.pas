@@ -49,16 +49,16 @@ type
     procedure PaintBox1Click(Sender: TObject);
     procedure PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: integer);
-    procedure malen;
+    PROCEDURE malen;
     procedure PaintBox1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: integer);
     procedure RadioGroup1Click(Sender: TObject);
-    procedure read_frame;
+    PROCEDURE read_frame;
     procedure SpinEdit1Change(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure ToggleBox1Change(Sender: TObject);
-    procedure write_frame;
-    procedure clear_frame;
+    PROCEDURE write_frame;
+    PROCEDURE clear_frame;
     function export_array: string;
   private
     { private declarations }
@@ -214,7 +214,52 @@ procedure TForm1.PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
 var
   x8, y8, z8: integer;
   i, j, k, iaus, jaus, kaus: integer;
+  layerstate:Boolean;
 begin
+  //fuer die schaltflaechen unter den ebenen
+  if (y>129) and (y<150) then
+  begin
+    x8 := trunc(x /122);
+    case RadioGroup1.ItemIndex of
+    0:
+    begin        // oben
+      layerstate := not frame[0,0,x8];
+      for i := 0 to 7 do
+      begin
+        for j := 0 to 7 do
+        begin
+          frame[i,j,x8] := layerstate;
+        end;
+      end;
+    end;
+    1:
+    begin
+      layerstate := not frame[x8,0,0];
+      for i := 0 to 7 do
+      begin
+        for j := 0 to 7 do
+        begin
+          frame[x8,j,i] := layerstate;
+        end;
+      end;
+    end;
+    2:
+    begin
+      layerstate := not frame[0,x8,0];
+      for i := 0 to 7 do
+      begin
+        for j := 0 to 7 do
+        begin
+          frame[i,x8,j] := layerstate;
+        end;
+      end;
+    end;
+    end;
+    malen;
+    write_frame;
+  end else begin
+
+
 
   i := trunc((x - trunc(x / 122) * 122) / 15);
   j := trunc(y / 15);
@@ -259,6 +304,7 @@ begin
   leddownstate := frame[iaus, jaus, kaus];
   malen;
   write_frame;
+  end;
 end;
 
 procedure TForm1.malen;
@@ -336,6 +382,11 @@ begin
       end;
     end;
   end;
+  PaintBox1.Canvas.Brush.Color := clGray;
+  for i:= 0 to 7 do
+  begin
+    PaintBox1.Canvas.Rectangle(i*122,130,i*122+120,150);
+  end;
 end;
 
 procedure TForm1.PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
@@ -346,11 +397,8 @@ begin
   if not (ssRight in Shift) then
   begin
     exit;
-  end
-  else
-  begin
-
   end;
+  if (y>120) and (y<151) then exit; //weill da unten der schaltflaechenbereich ist
 
   i := trunc((x - trunc(x / 122) * 122) / 15);
   j := trunc(y / 15);
