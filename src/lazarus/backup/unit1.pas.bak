@@ -16,6 +16,7 @@ type
     Button1: TButton;
     Button10: TButton;
     Button11: TButton;
+    Button12: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -36,6 +37,7 @@ type
     ToggleBox1: TToggleBox;
     procedure Button10Click(Sender: TObject);
     procedure Button11Click(Sender: TObject);
+    procedure Button12Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -49,16 +51,16 @@ type
     procedure PaintBox1Click(Sender: TObject);
     procedure PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: integer);
-    PROCEDURE malen;
+    procedure malen;
     procedure PaintBox1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: integer);
     procedure RadioGroup1Click(Sender: TObject);
-    PROCEDURE read_frame;
+    procedure read_frame;
     procedure SpinEdit1Change(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure ToggleBox1Change(Sender: TObject);
-    PROCEDURE write_frame;
-    PROCEDURE clear_frame;
+    procedure write_frame;
+    procedure clear_frame;
     function export_array: string;
   private
     { private declarations }
@@ -109,6 +111,44 @@ begin
   akkframe := akkframe + 1;
   write_frame;
   read_frame;
+end;
+
+procedure TForm1.Button12Click(Sender: TObject);
+var
+  wert: byte;
+  f, i, j, k, l: integer;
+  SDout: TFileStream;
+  bools: array[0..512] of boolean;
+  framepc:PChar;
+begin
+  if SaveDialog1.Execute then
+  begin
+    SDout := TFileStream.Create(SaveDialog1.FileName,fmCreate);
+    for f := 0 to frames.Count - 1 do
+    begin
+      framepc:=PChar(frames[f]);
+      for l := 0 to 511 do
+      begin
+        if framepc[l] = '0' then bools[l] := false else bools[l] := true;
+      end;
+      for i := 0 to 7 do
+      begin
+        for j := 0 to 7 do
+        begin
+          wert := 0;
+          for k := 7 downto 0 do
+          begin
+            wert := wert shl 1;
+            if bools[i*64 + j*8 + k] then
+              Inc(wert);
+          end;
+          SDout.WriteByte(wert);
+        end;
+      end;
+
+    end;
+    SDout.Free;
+  end;
 end;
 
 procedure TForm1.Button10Click(Sender: TObject);
@@ -198,8 +238,9 @@ end;
 
 procedure TForm1.Button8Click(Sender: TObject);
 begin
-  memo1.Text := 'PROGMEM const byte frames[' + IntToStr(frames.Count) + '][8][8] = ' + export_array +
-    chr(10) + 'const int framecount=' + IntToStr(frames.Count - 1) + ';';
+  memo1.Text := 'PROGMEM const byte frames[' + IntToStr(frames.Count) +
+    '][8][8] = ' + export_array + chr(10) + 'const int framecount=' +
+    IntToStr(frames.Count - 1) + ';';
   //ShowMessage(export_array);
 end;
 
@@ -214,56 +255,56 @@ procedure TForm1.PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
 var
   x8, y8, z8: integer;
   i, j, k, iaus, jaus, kaus: integer;
-  layerstate:Boolean;
+  layerstate: boolean;
 begin
   //fuer die schaltflaechen unter den ebenen
-  if (y>129) and (y<150) then
+  if (y > 129) and (y < 150) then
   begin
-    x8 := trunc(x /122);
+    x8 := trunc(x / 122);
     case RadioGroup1.ItemIndex of
-    0:
-    begin        // oben
-      layerstate := not frame[0,0,x8];
-      for i := 0 to 7 do
-      begin
-        for j := 0 to 7 do
+      0:
+      begin        // oben
+        layerstate := not frame[0, 0, x8];
+        for i := 0 to 7 do
         begin
-          frame[i,j,x8] := layerstate;
+          for j := 0 to 7 do
+          begin
+            frame[i, j, x8] := layerstate;
+          end;
         end;
       end;
-    end;
-    1:
-    begin
-      layerstate := not frame[x8,0,0];
-      for i := 0 to 7 do
+      1:
       begin
-        for j := 0 to 7 do
+        layerstate := not frame[x8, 0, 0];
+        for i := 0 to 7 do
         begin
-          frame[x8,j,i] := layerstate;
+          for j := 0 to 7 do
+          begin
+            frame[x8, j, i] := layerstate;
+          end;
         end;
       end;
-    end;
-    2:
-    begin
-      layerstate := not frame[0,x8,0];
-      for i := 0 to 7 do
+      2:
       begin
-        for j := 0 to 7 do
+        layerstate := not frame[0, x8, 0];
+        for i := 0 to 7 do
         begin
-          frame[i,x8,j] := layerstate;
+          for j := 0 to 7 do
+          begin
+            frame[i, x8, j] := layerstate;
+          end;
         end;
       end;
-    end;
     end;
     malen;
     write_frame;
-  end else begin
+  end
+  else
+  begin
 
-
-
-  i := trunc((x - trunc(x / 122) * 122) / 15);
-  j := trunc(y / 15);
-  k := trunc(x / 122);
+    i := trunc((x - trunc(x / 122) * 122) / 15);
+    j := trunc(y / 15);
+    k := trunc(x / 122);
    {case RadioGroup1.ItemIndex of
    //0: frame[,,] := not frame[trunc((x-trunc(x/122)*122)/15),y8,trunc(x/122)];
    0: begin frame[y8,x8,z8] := not frame[x8,y8,z8];
@@ -276,34 +317,34 @@ begin
    leddownstate:=frame[z8,y8,x8];
    end;
    end;}
-  //ShowMessage(IntToStr(x8)+', '+IntToStr(y8));
-  case RadioGroup1.ItemIndex of
-    0:
-    begin        // oben
-      iaus := (j * -1) + 7;
-      jaus := (i * -1) + 7;
-      kaus := k;
+    //ShowMessage(IntToStr(x8)+', '+IntToStr(y8));
+    case RadioGroup1.ItemIndex of
+      0:
+      begin        // oben
+        iaus := (j * -1) + 7;
+        jaus := (i * -1) + 7;
+        kaus := k;
+
+      end;
+
+      1:
+      begin //vorne
+        iaus := k;
+        jaus := i * -1 + 7;
+        kaus := j;
+      end;
+      2:
+      begin  //rechts
+        iaus := i;
+        jaus := k;
+        kaus := j;
+      end;
 
     end;
-
-    1:
-    begin //vorne
-      iaus := k;
-      jaus := i*-1+7;
-      kaus := j;
-    end;
-    2:
-    begin  //rechts
-      iaus := i;
-      jaus := k;
-      kaus := j;
-    end;
-
-  end;
-  frame[iaus, jaus, kaus] := not frame[iaus, jaus, kaus];
-  leddownstate := frame[iaus, jaus, kaus];
-  malen;
-  write_frame;
+    frame[iaus, jaus, kaus] := not frame[iaus, jaus, kaus];
+    leddownstate := frame[iaus, jaus, kaus];
+    malen;
+    write_frame;
   end;
 end;
 
@@ -383,9 +424,9 @@ begin
     end;
   end;
   PaintBox1.Canvas.Brush.Color := clGray;
-  for i:= 0 to 7 do
+  for i := 0 to 7 do
   begin
-    PaintBox1.Canvas.Rectangle(i*122,130,i*122+120,150);
+    PaintBox1.Canvas.Rectangle(i * 122, 130, i * 122 + 120, 150);
   end;
 end;
 
@@ -397,11 +438,9 @@ begin
   if not (ssRight in Shift) then
   begin
     exit;
-  end
-  else
-  begin
-
   end;
+  if (y > 120) and (y < 151) then
+    exit; //weill da unten der schaltflaechenbereich ist
 
   i := trunc((x - trunc(x / 122) * 122) / 15);
   j := trunc(y / 15);
@@ -431,7 +470,7 @@ begin
     1:
     begin //vorne
       iaus := k;
-      jaus := i*-1+7;
+      jaus := i * -1 + 7;
       kaus := j;
     end;
     2:
