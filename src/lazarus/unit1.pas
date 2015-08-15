@@ -17,6 +17,7 @@ type
     Button10: TButton;
     Button11: TButton;
     Button12: TButton;
+    Button13: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -38,6 +39,7 @@ type
     procedure Button10Click(Sender: TObject);
     procedure Button11Click(Sender: TObject);
     procedure Button12Click(Sender: TObject);
+    procedure Button13Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -62,6 +64,7 @@ type
     procedure write_frame;
     procedure clear_frame;
     function export_array: string;
+    function export_array_js: string;
   private
     { private declarations }
   public
@@ -119,17 +122,20 @@ var
   f, i, j, k, l: integer;
   SDout: TFileStream;
   bools: array[0..512] of boolean;
-  framepc:PChar;
+  framepc: PChar;
 begin
   if SaveDialog1.Execute then
   begin
-    SDout := TFileStream.Create(SaveDialog1.FileName,fmCreate);
+    SDout := TFileStream.Create(SaveDialog1.FileName, fmCreate);
     for f := 0 to frames.Count - 1 do
     begin
-      framepc:=PChar(frames[f]);
+      framepc := PChar(frames[f]);
       for l := 0 to 511 do
       begin
-        if framepc[l] = '0' then bools[l] := false else bools[l] := true;
+        if framepc[l] = '0' then
+          bools[l] := False
+        else
+          bools[l] := True;
       end;
       for i := 0 to 7 do
       begin
@@ -139,7 +145,7 @@ begin
           for k := 7 downto 0 do
           begin
             wert := wert shl 1;
-            if bools[i*64 + j*8 + k] then
+            if bools[i * 64 + j * 8 + k] then
               Inc(wert);
           end;
           SDout.WriteByte(wert);
@@ -148,8 +154,14 @@ begin
 
     end;
     SDout.Free;
-    ShowMessage(inttostr(frames.Count) + ' Frames erfolgreich für die SD Karte exportiert');
+    ShowMessage(IntToStr(frames.Count) +
+      ' Frames erfolgreich für die SD Karte exportiert');
   end;
+end;
+
+procedure TForm1.Button13Click(Sender: TObject);
+begin
+  memo1.Text := export_array_js;
 end;
 
 procedure TForm1.Button10Click(Sender: TObject);
@@ -642,6 +654,58 @@ begin
   end;
   exportstr := exportstr + '};';
   export_array := exportstr;
+end;
+
+function TForm1.export_array_js: string;
+var
+  i, j, k, f: integer;
+  exportstr: string;
+begin
+  exportstr := '[';
+  for f := 1 to frames.Count do
+  begin
+    akkframe := f;
+    read_frame;
+    exportstr := exportstr + '[';
+    for k := 0 to 7 do
+    begin
+      exportstr := exportstr + '[';
+      for j := 0 to 7 do
+      begin
+        exportstr := exportstr + '[';
+        for i := 0 to 7 do
+        begin
+          if frame[i, j, k] then
+          begin
+            exportstr := exportstr + 'true';
+          end
+          else
+          begin
+            exportstr := exportstr + 'false';
+          end;
+          if i <> 7 then
+             exportstr := exportstr + ',';
+
+
+        end;
+        exportstr := exportstr + ']';
+        if j <> 7 then
+          exportstr := exportstr + ',';
+
+      end;
+      exportstr := exportstr + ']';
+      if k <> 7 then
+        exportstr := exportstr + ',';
+      //exportstr := exportstr + chr(10);
+    end;
+    exportstr := exportstr + ']';
+    if f <> frames.Count then
+      exportstr := exportstr + ',';
+    //exportstr := exportstr + chr(10);
+  end;
+  exportstr := exportstr + ']';
+  export_array_js := exportstr;
+
 end;
 
 end.
