@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = 262
-  Height = 368
-  Top = 181
+  Left = 157
+  Height = 353
+  Top = 180
   Width = 994
   Caption = 'Cube Animator'
-  ClientHeight = 368
+  ClientHeight = 353
   ClientWidth = 994
   OnCreate = FormCreate
   LCLVersion = '1.0.14.0'
@@ -82,7 +82,7 @@ object Form1: TForm1
     TabOrder = 4
   end
   object Label1: TLabel
-    Left = 120
+    Left = 184
     Height = 43
     Top = 240
     Width = 53
@@ -96,7 +96,7 @@ object Form1: TForm1
     ParentFont = False
   end
   object Button5: TButton
-    Left = 8
+    Left = 0
     Height = 25
     Top = 312
     Width = 75
@@ -105,7 +105,7 @@ object Form1: TForm1
     TabOrder = 5
   end
   object Button6: TButton
-    Left = 96
+    Left = 86
     Height = 25
     Top = 312
     Width = 75
@@ -114,10 +114,10 @@ object Form1: TForm1
     TabOrder = 6
   end
   object SpinEdit1: TSpinEdit
-    Left = 424
+    Left = 440
     Height = 23
-    Top = 202
-    Width = 50
+    Top = 256
+    Width = 52
     MaxValue = 2000
     MinValue = 1
     OnChange = SpinEdit1Change
@@ -125,53 +125,53 @@ object Form1: TForm1
     Value = 200
   end
   object ToggleBox1: TToggleBox
-    Left = 496
-    Height = 25
-    Top = 200
-    Width = 75
+    Left = 440
+    Height = 49
+    Top = 288
+    Width = 96
     Caption = 'Play'
     OnChange = ToggleBox1Change
     TabOrder = 8
   end
   object Button7: TButton
     Left = 320
-    Height = 25
-    Top = 312
+    Height = 41
+    Top = 296
     Width = 104
     Caption = 'Frame löschen'
     OnClick = Button7Click
     TabOrder = 9
   end
   object Button8: TButton
-    Left = 475
-    Height = 33
-    Top = 264
-    Width = 96
-    Caption = 'Export als Code'
+    Left = 880
+    Height = 25
+    Top = 280
+    Width = 104
+    Caption = 'Export Code'
     OnClick = Button8Click
     TabOrder = 10
   end
   object Memo1: TMemo
-    Left = 592
+    Left = 672
     Height = 137
     Top = 200
-    Width = 368
+    Width = 184
     ScrollBars = ssAutoBoth
     TabOrder = 11
   end
   object Button9: TButton
-    Left = 456
-    Height = 33
-    Top = 304
-    Width = 115
-    Caption = 'Export und kopiere'
+    Left = 880
+    Height = 25
+    Top = 312
+    Width = 104
+    Caption = 'Export & kopiere'
     OnClick = Button9Click
     TabOrder = 12
   end
   object CheckBox1: TCheckBox
-    Left = 320
+    Left = 440
     Height = 19
-    Top = 202
+    Top = 224
     Width = 61
     Caption = 'Schleife'
     Checked = True
@@ -180,8 +180,8 @@ object Form1: TForm1
   end
   object Button10: TButton
     Left = 320
-    Height = 25
-    Top = 280
+    Height = 41
+    Top = 248
     Width = 104
     Caption = 'Frame einfügen'
     OnClick = Button10Click
@@ -189,30 +189,39 @@ object Form1: TForm1
   end
   object Button11: TButton
     Left = 320
-    Height = 25
-    Top = 248
+    Height = 41
+    Top = 200
     Width = 104
     Caption = 'Frame kopieren'
     OnClick = Button11Click
     TabOrder = 15
   end
   object Button12: TButton
-    Left = 216
-    Height = 25
-    Top = 312
-    Width = 75
+    Left = 552
+    Height = 49
+    Top = 288
+    Width = 96
     Caption = 'Export to SD'
     OnClick = Button12Click
     TabOrder = 16
   end
   object Button13: TButton
-    Left = 496
+    Left = 880
     Height = 25
-    Top = 236
-    Width = 75
+    Top = 248
+    Width = 104
     Caption = 'Export JS'
     OnClick = Button13Click
     TabOrder = 17
+  end
+  object Button14: TButton
+    Left = 552
+    Height = 49
+    Top = 232
+    Width = 96
+    Caption = 'Sim. in Browser'
+    OnClick = Button14Click
+    TabOrder = 18
   end
   object OpenDialog1: TOpenDialog
     left = 80

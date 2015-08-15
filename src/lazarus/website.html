@@ -1,0 +1,127 @@
+<body>
+Speed: <input id='interval' type="range" min="10" max="500" value="200" />
+X: <input id='x_camera' type="range" min="-400" max="400" value="300" onclick='camerapos();'/>
+Y: <input id='y_camera' type="range" min="-400" max="400" value="300" onclick='camerapos();'/>
+Z: <input id='z_camera' type="range" min="0" max="500" value="400" onclick='camerapos();'/>
+</body>
+<script src="http://gamingJS.com/Three.js"></script>
+<script src="http://gamingJS.com/ChromeFixes.js"></script>
+<script>
+  var camera, scene, renderer;
+  var geometry, material, mesh;
+  var kugeln = new Array([8]);
+  var kugelmesh = new Array([8]);
+  var kugelmaterial = new Array([8]);
+var animation_data = [[[[false,false,true,false,false,false,false,false],[false,false,true,false,false,false,false,false],[false,false,true,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false]],[[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,true,true,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,true,false,false,false,false,false],[false,false,false,true,false,false,false,false],[false,false,false,true,false,false,false,false],[false,false,true,true,false,false,false,false]],[[false,false,false,false,true,false,false,false],[false,false,false,true,true,false,false,false],[false,false,false,true,false,false,false,false],[false,false,false,true,false,false,false,false],[false,false,false,true,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,true,true,false,false,false,false],[false,false,false,true,false,false,false,false]],[[false,false,false,false,false,true,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,true,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,true,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,true,false,false,false,false]],[[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,true,false,false,false],[false,false,false,false,true,true,false,false],[false,false,false,false,false,true,false,false],[false,false,false,false,false,true,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false]],[[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,true,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,true,false,false,false],[false,false,false,false,false,false,false,false]],[[false,false,false,false,false,true,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,true,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,true,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false]],[[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,true,false,false,false,false],[false,false,false,false,true,false,false,false],[false,false,false,false,true,true,false,false]]],[[[false,false,false,true,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false]],[[false,false,false,true,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,true,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,true,false,false,false,false]],[[false,false,false,false,true,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,true,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false]],[[false,false,false,false,true,false,false,false],[false,false,false,false,true,false,false,false],[false,false,false,false,true,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,true,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false]],[[false,false,false,false,false,false,false,false],[false,false,false,false,true,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,true,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,true,false,false,false],[false,false,false,false,false,false,false,false]],[[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,true,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false]],[[false,false,false,false,false,true,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,true,false,false,false],[false,false,false,false,false,false,false,false]],[[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,true,true,false,false],[false,false,true,true,false,false,false,false],[false,false,false,false,false,false,false,false],[false,false,false,false,false,true,false,false],[false,false,false,false,false,false,false,false]]]];
+var test = false;
+  var f =0;
+  
+  //setInterval( , 500);
+  function camerapos() {
+	camera.position.x = document.getElementById("x_camera").value;
+	camera.position.y = document.getElementById("y_camera").value;
+	camera.position.z = document.getElementById("z_camera").value;
+	camera.lookAt(new THREE.Vector3(100,100,-100));
+  }
+  var timer
+  next_frame = function(){ 
+    
+    for (var i = 0;i<8;i++) {
+      for (var j = 0;j<8;j++) {
+        for (var k = 0;k<8;k++) {
+          if (animation_data[f][j*-1+7][i*-1+7][k]) {
+            kugelmaterial[i][j][k].color.setHex(0x00ff00);
+			kugelmaterial[i][j][k].opacity = 0.95;
+			kugelmaterial[i][j][k].wireframe = false;
+          } else {
+            kugelmaterial[i][j][k].color.setHex(0xaaaaaa);
+			kugelmaterial[i][j][k].opacity = 0.5;
+			kugelmaterial[i][j][k].wireframe = true;
+          }
+        }
+      }
+    }
+    
+    f++;
+    if (f >= animation_data.length) {
+      f=0;
+    }
+	//setInterval( next_frame(), 500);
+    };
+  var time=500;
+  
+  
+  init();
+  camerapos();
+  function repeat() {
+	next_frame();
+	timer = setTimeout(repeat,document.getElementById("interval").value);
+  }
+  repeat();
+  animate();
+  function init() {
+    scene = new THREE.Scene();
+
+    var aspect = window.innerWidth / window.innerHeight;
+    camera = new THREE.PerspectiveCamera(50, aspect, 1, 1000);
+	//var camera = new THREE.PerspectiveCamera( 45, width / height, 1, 1000 );
+    camera.position.z = 500;
+    camera.position.x = 274;
+    camera.position.y = 397;
+    camera.lookAt(new THREE.Vector3(100,100,100));
+    
+    scene.add(camera);
+    var pointLight =
+      new THREE.PointLight(0xFFFFFF);
+    pointLight.position.x = 500;
+    pointLight.position.y = 500;
+    pointLight.position.z = 530;
+    scene.add(pointLight);
+    geometry = new THREE.IcosahedronGeometry(200, 1);
+    material = new THREE.MeshLambertMaterial({
+      color: 0xFF0000,
+      //wireframe:true,
+      wireframeLinewidth: 2
+    });
+    
+    
+    for (var i = 0;i<8;i++) {
+      kugeln[i] = new Array([8]);
+      kugelmaterial[i] = new Array([8]);
+      kugelmesh[i] = new Array([8]);
+      for (var j = 0;j<8;j++) {
+        kugeln[i][j] = new Array([8]);
+        kugelmesh[i][j] = new Array([8]);
+        kugelmaterial[i][j] = new Array([8]);
+        for (var k = 0;k<8;k++) {
+          kugeln[i][j][k] = new THREE.IcosahedronGeometry(5,1);
+          kugelmaterial[i][j][k] = new THREE.MeshBasicMaterial({ color:0x00FF00, transparent: true, opacity: 0.95});
+          kugelmesh[i][j][k] = new THREE.Mesh(kugeln[i][j][k],kugelmaterial[i][j][k]);
+          kugelmesh[i][j][k].position.x = i*25;
+          kugelmesh[i][j][k].position.y = j*25;
+          kugelmesh[i][j][k].position.z = k*-25;
+          scene.add(kugelmesh[i][j][k]);
+        }
+      }
+    }
+    mesh = new THREE.Mesh(geometry, material);
+    //scene.add(mesh);
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setClearColorHex(0xffffff);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    document.body.style.margin = 0;
+    document.body.style.overflow = 'hidden';
+    document.body.appendChild(renderer.domElement);
+    
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    
+
+    renderer.render(scene, camera);
+  }
+</script>

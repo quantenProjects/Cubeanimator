@@ -5,7 +5,7 @@ SEDVersion=3
 PackagePurpose=InstallApp
 ShowInstallProgramWindow=0
 HideExtractAnimation=0
-UseLongFileName=0
+UseLongFileName=1
 InsideCompressed=0
 CAB_FixedSize=0
 CAB_ResvCodeSigning=0
@@ -31,7 +31,11 @@ PostInstallCmd=<None>
 AdminQuietInstCmd=
 UserQuietInstCmd=
 FILE0="cube_animator.exe"
+FILE1="website_begining.html"
+FILE2="website_ending.html"
 [SourceFiles]
 SourceFiles0=C:\Users\Benjamin\Documents\GitHub\Cubeanimator\src\lazarus\
 [SourceFiles0]
 %FILE0%=
+%FILE1%=
+%FILE2%=
