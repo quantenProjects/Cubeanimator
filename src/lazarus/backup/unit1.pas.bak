@@ -67,6 +67,7 @@ type
     procedure clear_frame;
     function export_array: string;
     function export_array_js: string;
+    function xyToijk(x, y: integer; out iaus, jaus, kaus: integer): boolean;
   private
     { private declarations }
   public
@@ -88,8 +89,7 @@ implementation
 { TForm1 }
 
 procedure TForm1.PaintBox1Click(Sender: TObject);
-var
-  i, j, k: integer;
+
 begin
 
 end;
@@ -168,32 +168,33 @@ begin
 end;
 
 procedure TForm1.Button14Click(Sender: TObject);
-var begining,ending,s:string;
-  tfbegin,tfend,tfOut: TextFile;
+var
+  s: string;
+  tfbegin, tfend, tfOut: TextFile;
 begin
   //begining:='hallo     geht das ueber mehere zeilen';
-  AssignFile(tfbegin,'website_begining.html');
-  AssignFile(tfend,'website_ending.html');
-  AssignFile(tfOut,'website.html');
+  AssignFile(tfbegin, 'website_begining.html');
+  AssignFile(tfend, 'website_ending.html');
+  AssignFile(tfOut, 'website.html');
   reset(tfbegin);
   Reset(tfend);
   Rewrite(tfOut);
-  while not eof(tfbegin) do
-    begin
-      readln(tfbegin, s);
-      writeln(tfOut,s);
-    end;
-  WriteLn(tfOut,'var animation_data = ',export_array_js,';');
-  while not eof(tfend) do
-    begin
-      readln(tfend, s);
-      writeln(tfOut,s);
-    end;
+  while not EOF(tfbegin) do
+  begin
+    readln(tfbegin, s);
+    writeln(tfOut, s);
+  end;
+  WriteLn(tfOut, 'var animation_data = ', export_array_js, ';');
+  while not EOF(tfend) do
+  begin
+    readln(tfend, s);
+    writeln(tfOut, s);
+  end;
   CloseFile(tfbegin);
   CloseFile(tfend);
   CloseFile(tfOut);
 
-  OpenURL('file://'+Application.Location+'website.html');
+  OpenURL('file://' + Application.Location + 'website.html');
 
 end;
 
@@ -300,7 +301,7 @@ end;
 procedure TForm1.PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: integer);
 var
-  x8, y8, z8: integer;
+  //x8, y8, z8: integer;
   i, j, k, iaus, jaus, kaus: integer;
   layerstate: boolean;
 begin
@@ -349,7 +350,7 @@ begin
   else
   begin
 
-    i := trunc((x - trunc(x / 122) * 122) / 15);
+    {i := trunc((x - trunc(x / 122) * 122) / 15);
     j := trunc(y / 15);
     k := trunc(x / 122);
    {case RadioGroup1.ItemIndex of
@@ -387,7 +388,11 @@ begin
         kaus := j;
       end;
 
-    end;
+    end; }
+
+    if not xyToijk(x, y, iaus, jaus, kaus) then
+      exit;
+
     frame[iaus, jaus, kaus] := not frame[iaus, jaus, kaus];
     leddownstate := frame[iaus, jaus, kaus];
     malen;
@@ -479,8 +484,8 @@ end;
 
 procedure TForm1.PaintBox1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
 var
-  x8, y8, z8: integer;
-  i, j, k, iaus, jaus, kaus: integer;
+//  x8, y8, z8: integer;
+ iaus, jaus, kaus: integer;
 begin
   if not (ssRight in Shift) then
   begin
@@ -489,7 +494,7 @@ begin
   if (y > 120) and (y < 151) then
     exit; //weill da unten der schaltflaechenbereich ist
 
-  i := trunc((x - trunc(x / 122) * 122) / 15);
+  {i := trunc((x - trunc(x / 122) * 122) / 15);
   j := trunc(y / 15);
   k := trunc(x / 122);
    {if (x8 = lastx8) and (y8 = lasty8) and (z8 = lastz8) then
@@ -527,7 +532,11 @@ begin
       kaus := j;
     end;
 
-  end;
+  end;   }
+
+  if not xyToijk(x, y, iaus, jaus, kaus) then
+    exit;
+
   frame[iaus, jaus, kaus] := leddownstate;
   malen;
   write_frame;
@@ -602,10 +611,10 @@ end;
 
 procedure TForm1.write_frame;
 var
-  iframe: integer;
+//  iframe: integer;
   i, j, k: integer;
   framestr: string;
-  ledchar: char;
+  //ledchar: char;
 begin
   framestr := '';
   for k := 0 to 7 do
@@ -718,8 +727,7 @@ begin
             exportstr := exportstr + 'false';
           end;
           if i <> 7 then
-             exportstr := exportstr + ',';
-
+            exportstr := exportstr + ',';
 
         end;
         exportstr := exportstr + ']';
@@ -741,5 +749,54 @@ begin
   export_array_js := exportstr;
 
 end;
+
+function TForm1.xyToijk(x, y: integer; out iaus, jaus, kaus: integer): boolean;
+var
+  i, j, k: integer;
+begin
+  i := trunc((x - trunc(x / 122) * 122) / 15);
+  j := trunc(y / 15);
+  k := trunc(x / 122);
+   {case RadioGroup1.ItemIndex of
+   //0: frame[,,] := not frame[trunc((x-trunc(x/122)*122)/15),y8,trunc(x/122)];
+   0: begin frame[y8,x8,z8] := not frame[x8,y8,z8];
+      leddownstate:=frame[x8,y8,z8];
+   end;
+   1: begin frame[x8,z8,y8] := not frame[x8,z8,y8];
+   leddownstate:=frame[x8,z8,y8];
+   end;
+   2: begin frame[z8,y8,x8] := not frame[z8,y8,x8];
+   leddownstate:=frame[z8,y8,x8];
+   end;
+   end;}
+  //ShowMessage(IntToStr(x8)+', '+IntToStr(y8));
+  case RadioGroup1.ItemIndex of
+    0:
+    begin        // oben
+      iaus := (j * -1) + 7;
+      jaus := (i * -1) + 7;
+      kaus := k;
+
+    end;
+
+    1:
+    begin //vorne
+      iaus := k;
+      jaus := i * -1 + 7;
+      kaus := j;
+    end;
+    2:
+    begin  //rechts
+      iaus := i;
+      jaus := k;
+      kaus := j;
+    end;
+  end;
+  result := true;
+  if (iaus>7) or (iaus < 0) then result:=false;
+  if (jaus>7) or (jaus < 0) then result:=false;
+  if (kaus>7) or (kaus < 0) then result:=false;
+end;
+
 
 end.

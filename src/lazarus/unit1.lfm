@@ -1,13 +1,13 @@
 object Form1: TForm1
-  Left = 157
+  Left = 234
   Height = 353
-  Top = 180
+  Top = 126
   Width = 994
   Caption = 'Cube Animator'
   ClientHeight = 353
   ClientWidth = 994
   OnCreate = FormCreate
-  LCLVersion = '1.0.14.0'
+  LCLVersion = '1.4.0.4'
   object PaintBox1: TPaintBox
     Left = 8
     Height = 150
@@ -35,7 +35,7 @@ object Form1: TForm1
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
     ClientHeight = 87
-    ClientWidth = 93
+    ClientWidth = 95
     ItemIndex = 0
     Items.Strings = (
       'Oben'
@@ -83,9 +83,9 @@ object Form1: TForm1
   end
   object Label1: TLabel
     Left = 184
-    Height = 43
+    Height = 42
     Top = 240
-    Width = 53
+    Width = 52
     Caption = '1/1'
     Font.CharSet = ANSI_CHARSET
     Font.Height = -37
@@ -115,7 +115,7 @@ object Form1: TForm1
   end
   object SpinEdit1: TSpinEdit
     Left = 440
-    Height = 23
+    Height = 25
     Top = 256
     Width = 52
     MaxValue = 2000
@@ -170,9 +170,9 @@ object Form1: TForm1
   end
   object CheckBox1: TCheckBox
     Left = 440
-    Height = 19
+    Height = 24
     Top = 224
-    Width = 61
+    Width = 76
     Caption = 'Schleife'
     Checked = True
     State = cbChecked
