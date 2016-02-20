@@ -1,0 +1,14 @@
+<body>
+Speed: <input id='interval' type="range" min="10" max="500" value="200" />
+X: <input id='x_camera' type="range" min="-400" max="400" value="300" onclick='camerapos();'/>
+Y: <input id='y_camera' type="range" min="-400" max="400" value="300" onclick='camerapos();'/>
+Z: <input id='z_camera' type="range" min="0" max="500" value="400" onclick='camerapos();'/>
+</body>
+<script src="http://gamingJS.com/Three.js"></script>
+<script src="http://gamingJS.com/ChromeFixes.js"></script>
+<script>
+  var camera, scene, renderer;
+  var geometry, material, mesh;
+  var kugeln = new Array([8]);
+  var kugelmesh = new Array([8]);
+  var kugelmaterial = new Array([8]);
