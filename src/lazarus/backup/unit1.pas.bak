@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, types, LCLType, Spin, Clipbrd, lclintf;
+  StdCtrls, types, LCLType, Spin, Clipbrd, lclintf,LResources;
 
 type
 
@@ -170,28 +170,18 @@ end;
 procedure TForm1.Button14Click(Sender: TObject);
 var
   s: string;
-  tfbegin, tfend, tfOut: TextFile;
+  tfOut: TextFile;
+  beginres,endres:TLResource;
 begin
-  //begining:='hallo     geht das ueber mehere zeilen';
-  AssignFile(tfbegin, 'website_begining.html');
-  AssignFile(tfend, 'website_ending.html');
+  beginres := LazarusResources.Find('begin','HTML');
+  endres := LazarusResources.Find('end','HTML');
   AssignFile(tfOut, 'website.html');
-  reset(tfbegin);
-  Reset(tfend);
   Rewrite(tfOut);
-  while not EOF(tfbegin) do
-  begin
-    readln(tfbegin, s);
-    writeln(tfOut, s);
-  end;
+  s := beginres.Value;
+  Write(tfOut,s);
   WriteLn(tfOut, 'var animation_data = ', export_array_js, ';');
-  while not EOF(tfend) do
-  begin
-    readln(tfend, s);
-    writeln(tfOut, s);
-  end;
-  CloseFile(tfbegin);
-  CloseFile(tfend);
+  s := endres.Value;
+  Write(tfOut,s);
   CloseFile(tfOut);
 
   OpenURL('file://' + Application.Location + 'website.html');
@@ -279,7 +269,7 @@ begin
   begin
     frames.Delete(akkframe - 1);
   end;
-  akkframe := 1;
+  akkframe := frames.Count ;
   read_frame;
 
 end;
@@ -301,7 +291,7 @@ end;
 procedure TForm1.PaintBox1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: integer);
 var
-  //x8, y8, z8: integer;
+  x8: integer;
   i, j, k, iaus, jaus, kaus: integer;
   layerstate: boolean;
 begin
@@ -353,7 +343,7 @@ begin
     {i := trunc((x - trunc(x / 122) * 122) / 15);
     j := trunc(y / 15);
     k := trunc(x / 122);
-   {case RadioGroup1.ItemIndex of
+   case RadioGroup1.ItemIndex of
    //0: frame[,,] := not frame[trunc((x-trunc(x/122)*122)/15),y8,trunc(x/122)];
    0: begin frame[y8,x8,z8] := not frame[x8,y8,z8];
       leddownstate:=frame[x8,y8,z8];
@@ -364,7 +354,7 @@ begin
    2: begin frame[z8,y8,x8] := not frame[z8,y8,x8];
    leddownstate:=frame[z8,y8,x8];
    end;
-   end;}
+   end;
     //ShowMessage(IntToStr(x8)+', '+IntToStr(y8));
     case RadioGroup1.ItemIndex of
       0:
@@ -497,12 +487,12 @@ begin
   {i := trunc((x - trunc(x / 122) * 122) / 15);
   j := trunc(y / 15);
   k := trunc(x / 122);
-   {if (x8 = lastx8) and (y8 = lasty8) and (z8 = lastz8) then
+   if (x8 = lastx8) and (y8 = lasty8) and (z8 = lastz8) then
    Exit;
    lastx8:=x8;
    lasty8 := y8;
-   lastz8 := z8;}
-   {case RadioGroup1.ItemIndex of
+   lastz8 := z8;
+   case RadioGroup1.ItemIndex of
    //0: frame[,,] := not frame[trunc((x-trunc(x/122)*122)/15),y8,trunc(x/122)];
    0: frame[x8,y8,z8] := leddownstate;
    1: frame[x8,z8,y8] := leddownstate;
@@ -798,5 +788,7 @@ begin
   if (kaus>7) or (kaus < 0) then result:=false;
 end;
 
+initialization
+{$I resource.lrs}
 
 end.
